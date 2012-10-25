@@ -23,7 +23,9 @@ abstract class Twitter_Bootstrap_Form extends Zend_Form
      */
     const DISPOSITION_HORIZONTAL = 'horizontal';
     const DISPOSITION_INLINE     = 'inline';
-    const DISPOSTION_SEARCH      = 'search';
+    const DISPOSITION_SEARCH     = 'search';
+    
+    protected $_prefixesInitialized = false;
 
     /**
      * Override the base form constructor.
@@ -32,30 +34,7 @@ abstract class Twitter_Bootstrap_Form extends Zend_Form
      */
     public function __construct($options = null)
     {
-        $this->getView()->addHelperPath(
-            'Twitter/Bootstrap/View/Helper',
-            'Twitter_Bootstrap_View_Helper'
-        );
-
-        $this->addPrefixPath(
-            'Twitter_Bootstrap_Form_Element',
-            'Twitter/Bootstrap/Form/Element',
-            'element'
-        );
-
-        $this->addElementPrefixPath(
-            'Twitter_Bootstrap_Form_Decorator',
-            'Twitter/Bootstrap/Form/Decorator',
-            'decorator'
-        );
-
-        $this->addDisplayGroupPrefixPath(
-            'Twitter_Bootstrap_Form_Decorator',
-            'Twitter/Bootstrap/Form/Decorator'
-        );
-
-        $this->setDefaultDisplayGroupClass('Twitter_Bootstrap_Form_DisplayGroup');
-
+        $this->_initializePrefixes();
         $this->setDecorators(array(
             'FormElements',
             'Form'
@@ -63,7 +42,65 @@ abstract class Twitter_Bootstrap_Form extends Zend_Form
 
         parent::__construct($options);
     }
+    
+    protected function _initializePrefixes()
+    {
+        if (!$this->_prefixesInitialized)
+        {
+            if (null !== $this->getView())
+            {
+                $this->getView()->addHelperPath(
+                        'Twitter/Bootstrap/View/Helper',
+                        'Twitter_Bootstrap_View_Helper'
+                );
+            }
 
+            $this->addPrefixPath(
+                    'Twitter_Bootstrap_Form_Element',
+                    'Twitter/Bootstrap/Form/Element',
+                    'element'
+            );
+            
+            $this->addElementPrefixPath(
+                    'Twitter_Bootstrap_Form_Decorator',
+                    'Twitter/Bootstrap/Form/Decorator',
+                    'decorator'
+            );
+            
+            $this->addDisplayGroupPrefixPath(
+                    'Twitter_Bootstrap_Form_Decorator',
+                    'Twitter/Bootstrap/Form/Decorator'
+            );
+            
+            $this->setDefaultDisplayGroupClass('Twitter_Bootstrap_Form_DisplayGroup');
+            
+            $this->_prefixesInitialized = true;
+        }
+    }
+
+    /**
+     * Adds default decorators if none are specified in the options and then calls Zend_Form::createElement()
+     * (non-PHPdoc)
+     * @see Zend_Form::createElement()
+     */
+    public function createElement($type, $name, $options = null)
+    {
+        // If we haven't specified our own decorators, add the default ones in.
+        if (is_array($this->_elementDecorators)) {
+            if (null === $options) {
+                $options = array('decorators' => $this->_elementDecorators);
+            } elseif ($options instanceof Zend_Config) {
+                $options = $options->toArray();
+            }
+
+            if ( is_array($options) && !array_key_exists('decorators', $options) ) {
+                $options['decorators'] = $this->_elementDecorators;
+            }
+        }
+        
+        return parent::createElement($type, $name, $options);
+    }
+    
     /**
      * @param string $disposition
      */
@@ -75,7 +112,7 @@ abstract class Twitter_Bootstrap_Form extends Zend_Form
                 array(
                     self::DISPOSITION_HORIZONTAL,
                     self::DISPOSITION_INLINE,
-                    self::DISPOSTION_SEARCH
+                    self::DISPOSITION_SEARCH
                 )
             )
         ) {

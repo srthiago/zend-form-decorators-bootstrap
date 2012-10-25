@@ -216,7 +216,8 @@ class My_Bootstrap_Form extends Twitter_Bootstrap_Form_Horizontal
             'label'      => 'Send e-mail!',
             'buttonType' => Twitter_Bootstrap_Form_Element_Submit::BUTTON_SUCCESS,
             'icon'       => 'ok',
-            'whiteIcon'  => true
+            'whiteIcon'  => true,
+            'iconPosition' => Twitter_Bootstrap_Form_Element_Button::ICON_POSITION_RIGHT
         ));
     }
 }
@@ -239,7 +240,7 @@ class My_Bootstrap_Form extends Twitter_Bootstrap_Form_Horizontal
             'type'          => 'submit'
         ));
 
-        $this->addElement('button', 'submit', array(
+        $this->addElement('button', 'reset', array(
             'label'         => 'Reset',
             'type'          => 'reset'
         ));
@@ -259,7 +260,8 @@ class My_Bootstrap_Form extends Twitter_Bootstrap_Form_Horizontal
 #### Addon decorator ####
 
 This decorator allows specify some content that will be *appended* or *prepended* to the given input. It can render text,
-a glyphicon or a checkbox. To accomplish this it supports several options that will be set to the form element itself.
+a glyphicon or a checkbox. To accomplish this it supports several options that will be set to the form element itself. If 
+you pass an element that is a Zend_Form_Element_Submit element, it will put it there without the span.
 
 * __prepend__ (*string*)
   Prepends the content of the option to the generated field form.
@@ -300,6 +302,16 @@ class My_Bootstrap_Form extends Twitter_Bootstrap_Form_Horizontal
         $this->addElement('text', 'input2', array(
             'label' => '2nd E-mail',
             'prepend' => '<i class="icon-envelope"></i>'
+        ));
+        
+        // A submit button
+        $submitButton = $this->createElement('button', 'addButton', array(
+            'label' => 'Add'
+        );
+        
+        $this->addElement('text', 'input2', array(
+            'label' => '2nd E-mail',
+            'prepend' => $submitButton
         ));
     }
 }
@@ -353,3 +365,4 @@ So that's it. Now you can start creating forms and rendering them the way shown 
 
 * __adepretis__ <ad@25th-floor.com>
 * __rafalgalka__ <http://blog.modernweb.pl>
+* __lrobert__
